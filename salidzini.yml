@@ -1,0 +1,49 @@
+name: Salidzini XML
+
+on:
+  schedule:
+    - cron: "30 4 * * *"   # katru dienu ~06:30 Rīgas laikā
+  workflow_dispatch:        # poga "Run workflow" palaišanai ar roku
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ģenerē XML
+        run: python salidzini_feed.py
+      - name: Sagatavo lapu
+        run: |
+          mkdir site
+          cp salidzini-lv.xml site/
+          touch site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
+      - name: Saglabā pēdējās palaišanas laiku (lai GitHub neizslēdz grafiku)
+        run: |
+          date -u +"%Y-%m-%d %H:%M UTC" > last-run.txt
+          tail -n 50 salidzini_feed.log > feed-log.txt || true
+          git config user.name "salidzini-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add last-run.txt feed-log.txt
+          git commit -m "Salidzini XML atjaunots" || true
+          git push || true
