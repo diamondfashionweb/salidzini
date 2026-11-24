@@ -7,19 +7,14 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: salidzini
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,23 +22,13 @@ jobs:
           python-version: "3.12"
       - name: Ģenerē XML
         run: python salidzini_feed.py
-      - name: Sagatavo lapu
+      - name: Saglabā XML repozitorijā (GitHub Pages to publicē)
         run: |
-          mkdir site
-          cp salidzini-lv.xml site/
-          touch site/.nojekyll
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - id: deploy
-        uses: actions/deploy-pages@v4
-      - name: Saglabā pēdējās palaišanas laiku (lai GitHub neizslēdz grafiku)
-        run: |
+          touch .nojekyll
           date -u +"%Y-%m-%d %H:%M UTC" > last-run.txt
           tail -n 50 salidzini_feed.log > feed-log.txt || true
-          git config user.name "salidzini-bot"
+          git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add last-run.txt feed-log.txt
-          git commit -m "Salidzini XML atjaunots" || true
-          git push || true
+          git add salidzini-lv.xml last-run.txt feed-log.txt .nojekyll
+          git commit -m "Salidzini XML atjaunots $(date -u +%F)" || echo "nav izmaiņu"
+          git push
