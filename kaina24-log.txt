@@ -1,0 +1,2 @@
+2026-11-25 20:40:35 Brīdinājums: nav Shopify atslēgu — pieejamība pēc publiskās 'available', bez <stock>
+2026-11-25 20:40:37 OK: 135 preces, izslēgtas 11 -> kaina24-lt.xml
