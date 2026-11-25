@@ -18,7 +18,17 @@ Tas pats GitHub darbs katru rītu izveido arī `kaina24-lt.xml` — lietuviski (
 **XML saite Kaina24.lt:** `https://diamondfashionweb.github.io/salidzini/kaina24-lt.xml`
 
 - Kods: `kaina24_feed.py`, kategoriju tulkojumi `lt_rules.py`, LT nosaukumi precēm bez LT tulkojuma: `lt_names.json`
-- Žurnāls: `kaina24-log.txt` — ja tur parādās „pavadinimas atrodo latviškas”, pievieno LT nosaukumu `lt_names.json`
+- Žurnāls: `kaina24-log.txt` — ja tur parādās „nosaukums izskatās latvisks”, pievieno LT nosaukumu `lt_names.json`
 - Shopify tagi: `kaina24-exclude` (neiekļaut LT), `kaina24-name:Naujas pavadinimas`
 - Iekļauj tikai preces ar bildi un pieejamas pārdošanai. **Precīzs atlikums > 0 un `<stock>`**: repozitorijā
   Settings → Secrets and variables → Actions pievieno `SHOPIFY_STORE`, `SHOPIFY_CLIENT_ID`, `SHOPIFY_CLIENT_SECRET`.
+
+## Hind.ee XML (Igaunija)
+
+Hind.ee pieder tam pašam uzņēmumam kā Kaina24.lt, formāts identisks. Tas pats skripts ar parametru `ee`
+izveido `hind-ee.xml` — igauniski (`/et/` saites), piegāde uz Igauniju kā Lietuvā.
+
+**XML saite Hind.ee:** `https://diamondfashionweb.github.io/salidzini/hind-ee.xml`
+
+- Kods: `kaina24_feed.py ee`, kategoriju tulkojumi `et_rules.py`, ET nosaukumu labojumi `et_names.json`
+- Žurnāls: `hind-log.txt`; Shopify tagi: `hind-exclude`, `hind-name:Uus nimi`
