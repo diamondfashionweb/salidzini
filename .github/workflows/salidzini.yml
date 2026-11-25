@@ -20,15 +20,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Ģenerē XML
+      - name: Ģenerē XML (Salidzini.lv)
         run: python salidzini_feed.py
+      - name: Ģenerē XML (Kaina24.lt)
+        continue-on-error: true   # LT kļūda neaptur Salidzini faila atjaunošanu
+        env:                      # ja GitHub Secrets ir iestatīti — precīzs atlikums (> 0) un <stock>
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
+          SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+          SHOPIFY_ADMIN_TOKEN: ${{ secrets.SHOPIFY_ADMIN_TOKEN }}
+        run: python kaina24_feed.py
       - name: Saglabā XML repozitorijā (GitHub Pages to publicē)
         run: |
           touch .nojekyll
           date -u +"%Y-%m-%d %H:%M UTC" > last-run.txt
           tail -n 50 salidzini_feed.log > feed-log.txt || true
+          tail -n 50 kaina24_feed.log > kaina24-log.txt || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add salidzini-lv.xml last-run.txt feed-log.txt .nojekyll
-          git commit -m "Salidzini XML atjaunots $(date -u +%F)" || echo "nav izmaiņu"
+          git add kaina24-lt.xml kaina24-log.txt || true
+          git commit -m "XML atjaunots $(date -u +%F)" || echo "nav izmaiņu"
           git push
