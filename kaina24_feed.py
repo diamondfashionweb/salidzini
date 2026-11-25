@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Kaina24.lt XML plūsma (Lietuva) — Diamond Fashion.
+"""Kaina24.lt (Lietuva) un Hind.ee (Igaunija) XML plūsmas — Diamond Fashion.
 
-Tie paši veikala dati kā Salidzini.lv, bet lietuviski (/lt/), pēc Kaina24.lt formāta
-(https://www.kaina24.lt/xml/example.xml). Izvade: kaina24-lt.xml
+Abiem portāliem ir viens īpašnieks un viens XML formāts (https://www.kaina24.lt/xml/example.xml,
+https://www.hind.ee/xml/example.xml). Tie paši veikala dati kā Salidzini.lv, bet attiecīgajā valodā.
 
-  python3 kaina24_feed.py
+  python3 kaina24_feed.py        # Lietuva -> kaina24-lt.xml
+  python3 kaina24_feed.py ee     # Igaunija -> hind-ee.xml
 
 Noteikumi kā Salidzini: bez dāvanu kartēm, 0 € dāvanām, TEST precēm, tikai pieejamās preces,
-lietotām kleitām <condition>used</condition>. Tags kaina24-exclude (vai salidzini-exclude)
-izslēdz preci, kaina24-name:Jauns pavadinimas aizvieto nosaukumu.
+lietotām kleitām <condition>used</condition>. Tags kaina24-exclude / hind-exclude (vai salidzini-exclude)
+izslēdz preci, kaina24-name:... / hind-name:... aizvieto nosaukumu.
 """
 import html
 import json
@@ -21,16 +22,22 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from feed_rules import classify  # noqa: E402
+from et_rules import category_et, clean_name_et  # noqa: E402
 from lt_rules import LV_CHARS, category_lt, clean_name_lt  # noqa: E402
 from salidzini_feed import SHOP, access_token, fetch_products, gql, load_env  # noqa: E402
 
-FILENAME = "kaina24-lt.xml"
-LOGFILE = "kaina24_feed.log"
-UTM = "utm_source=kaina24.lt&utm_medium=referral&utm_campaign=product_catalog"
-EXCLUDE_TAGS = {"do-not-publish", "internal-gift", "salidzini-exclude", "kaina24-exclude"}
+COUNTRIES = {
+    "lt": {"portal": "Kaina24.lt", "locale": "lt", "file": "kaina24-lt.xml", "log": "kaina24_feed.log",
+           "utm": "kaina24.lt", "tag": "kaina24", "names": "lt_names.json",
+           "category": category_lt, "clean": clean_name_lt},
+    "ee": {"portal": "Hind.ee", "locale": "et", "file": "hind-ee.xml", "log": "hind_feed.log",
+           "utm": "hind.ee", "tag": "hind", "names": "et_names.json",
+           "category": category_et, "clean": clean_name_et},
+}
+CFG = COUNTRIES["lt"]
 BRAND = "Diamond Fashion"
 MAX_EXTRA_IMAGES = 4
-# Pristatymas į Lietuvą (diamondfashion.co/lt/pages/pristatymas)
+# Piegāde uz Lietuvu un Igauniju ir vienāda (diamondfashion.co/lt/pages/pristatymas)
 DELIVERY = {
     "parcel_locker_delivery": ("3-4", "4.99"),
     "home_delivery": ("1-2", "12.00"),  # skubus pristatymas
@@ -40,7 +47,7 @@ DELIVERY = {
 def log(msg):
     line = f"{datetime.now():%Y-%m-%d %H:%M:%S} {msg}"
     print(line)
-    with open(HERE / LOGFILE, "a", encoding="utf-8") as f:
+    with open(HERE / CFG["log"], "a", encoding="utf-8") as f:
         f.write(line + "\n")
 
 
@@ -76,8 +83,11 @@ def fetch_qty(env, token):
 
 def build_items(qty=None):
     curated = json.loads((HERE / "curated.json").read_text(encoding="utf-8"))
-    lt_names = json.loads((HERE / "lt_names.json").read_text(encoding="utf-8"))
-    lt = fetch_products("/lt")
+    names_file = HERE / CFG["names"]
+    lt_names = json.loads(names_file.read_text(encoding="utf-8")) if names_file.exists() else {}
+    lt = fetch_products("/" + CFG["locale"])
+    utm = f"utm_source={CFG['utm']}&utm_medium=referral&utm_campaign=product_catalog"
+    exclude = {"do-not-publish", "internal-gift", "salidzini-exclude", CFG["tag"] + "-exclude"}
     items, skipped, warn = [], [], []
     for p in lt:
         tags = set(p.get("tags", []))
@@ -90,7 +100,7 @@ def build_items(qty=None):
         ptype = (p.get("product_type") or "").lower()
         title_up = p["title"].upper()
         reason = None
-        if "gift card" in ptype or "dovanų kortel" in ptype or "dāvanu karte" in ptype:
+        if any(g in ptype for g in ("gift card", "dovanų kortel", "dāvanu karte", "kinkekaart")):
             reason = "dovanų kortelė"
         elif not avail:
             reason = "nav noliktavā"
@@ -98,9 +108,9 @@ def build_items(qty=None):
             reason = "cena 0"
         elif not p.get("images"):
             reason = "nav bildes"
-        elif tags & EXCLUDE_TAGS:
+        elif tags & exclude:
             reason = "izslēgšanas tags"
-        elif any(t in title_up for t in ("TEST PRODUCT", "TESTA PRODUKTS", "BANDOMOJI PREKĖ", "BANDOMASIS PRODUKTAS")):
+        elif any(t in title_up for t in ("TEST PRODUCT", "TESTA PRODUKTS", "BANDOMOJI PREKĖ", "BANDOMASIS PRODUKTAS", "TESTTOODE")):
             reason = "testa prece"
         if reason:
             skipped.append((reason, p["title"]))
@@ -111,15 +121,15 @@ def build_items(qty=None):
             cat_lv, used = c["category"], c["used"]
         else:
             cat_lv, used = classify(p.get("product_type", ""), p["title"], p["handle"])
-        cat, unknown = category_lt(cat_lv)
+        cat, unknown = CFG["category"](cat_lv)
         if unknown:
-            warn.append(f"kategorija bez LT tulkojuma: {unknown} ({p['handle']})")
-        override = next((t.split(":", 1)[1].strip() for t in tags if t.startswith("kaina24-name:")), None)
+            warn.append(f"kategorija bez tulkojuma: {unknown} ({p['handle']})")
+        override = next((t.split(":", 1)[1].strip() for t in tags if t.startswith(CFG["tag"] + "-name:")), None)
         if not override and str(p["id"]) in lt_names:
             override = "Diamond Fashion " + lt_names[str(p["id"])]
-        name = override or clean_name_lt(p["title"])
+        name = override or CFG["clean"](p["title"])
         if LV_CHARS.search(name):
-            warn.append(f"pavadinimas atrodo latviškas (pridėk į lt_names.json): {p['id']} {name}")
+            warn.append(f"nosaukums izskatās latvisks (pievieno {CFG['names']}): {p['id']} {name}")
 
         v = avail[0]
         images = [i["src"] for i in p.get("images") or []]
@@ -135,7 +145,7 @@ def build_items(qty=None):
             "ean": (v.get("barcode") or "").strip(),
             "image": images[0] if images else "",
             "extra_images": images[1:1 + MAX_EXTRA_IMAGES],
-            "url": f"{SHOP}/lt/products/{p['handle']}?variant={v['id']}&{UTM}",
+            "url": f"{SHOP}/{CFG['locale']}/products/{p['handle']}?variant={v['id']}&{utm}",
             "category": cat,
             "description": plain_text(p.get("body_html")),
         })
@@ -144,7 +154,7 @@ def build_items(qty=None):
 
 def to_xml(items):
     out = ['<?xml version="1.0" encoding="UTF-8"?>',
-           f"<!-- Diamond Fashion; Kaina24.lt; generated {datetime.now(timezone.utc).isoformat(timespec='seconds')} -->",
+           f"<!-- Diamond Fashion; {CFG['portal']}; generated {datetime.now(timezone.utc).isoformat(timespec='seconds')} -->",
            "<products>"]
     for it in items:
         out += [f'<product id="{it["id"]}">',
@@ -173,6 +183,8 @@ def to_xml(items):
 
 
 def main():
+    global CFG
+    CFG = COUNTRIES[sys.argv[1] if len(sys.argv) > 1 else "lt"]
     try:
         env = load_env()
         qty = None
@@ -187,8 +199,8 @@ def main():
         minimum = int(env.get("SHOPIFY_MIN_ITEMS", "50"))
         if len(items) < minimum:
             raise RuntimeError(f"tikai {len(items)} preces (< {minimum}) — failu neaizvietoju")
-        (HERE / FILENAME).write_text(xml, encoding="utf-8")
-        log(f"OK: {len(items)} preces, izslēgtas {len(skipped)} -> {FILENAME}")
+        (HERE / CFG["file"]).write_text(xml, encoding="utf-8")
+        log(f"OK: {len(items)} preces, izslēgtas {len(skipped)} -> {CFG['file']}")
         for w in warn:
             log("  " + w)
     except Exception as e:  # noqa: BLE001
