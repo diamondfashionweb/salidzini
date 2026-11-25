@@ -1,0 +1,2 @@
+2026-11-25 20:58:18 Brīdinājums: nav Shopify atslēgu — pieejamība pēc publiskās 'available', bez <stock>
+2026-11-25 20:58:19 OK: 135 preces, izslēgtas 11 -> hind-ee.xml
