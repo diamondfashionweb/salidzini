@@ -1,2 +1,2 @@
-2026-11-25 20:58:15 Brīdinājums: nav Shopify atslēgu — atlikums pēc publiskās 'available' pazīmes
-2026-11-25 20:58:17 OK: 135 preces, izslēgtas 11, ar bildi 135 -> salidzini-lv.xml
+2026-11-26 05:32:48 Brīdinājums: nav Shopify atslēgu — atlikums pēc publiskās 'available' pazīmes
+2026-11-26 05:32:50 OK: 135 preces, izslēgtas 11, ar bildi 135 -> salidzini-lv.xml
