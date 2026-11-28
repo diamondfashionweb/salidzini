@@ -1,7 +1,7 @@
-2026-11-27 05:34:19 Brīdinājums: nav Shopify atslēgu — atlikums pēc publiskās 'available' pazīmes
-2026-11-27 05:34:22 OK: 140 preces, izslēgtas 11, ar bildi 140 -> salidzini-lv.xml
-2026-11-27 05:34:22   jauna prece bez curated nosaukuma: Diamond Fashion Lietota balta standartdeju kleita ar spalvām - XS - Junior II
-2026-11-27 05:34:22   jauna prece bez curated nosaukuma: Diamond Fashion Lietota rozā latīņamerikas deju sacensību kleita ar spalvām - Junior II, XS
-2026-11-27 05:34:22   jauna prece bez curated nosaukuma: Diamond Fashion Lietota melna latīņamerikas deju sacensību kleita - Junior II, XS
-2026-11-27 05:34:22   jauna prece bez curated nosaukuma: Diamond Fashion Lietota sarkana standartdeju kleita ar spalvām – XS/S - Junior II un jauniešu klase
-2026-11-27 05:34:22   jauna prece bez curated nosaukuma: Diamond Fashion Lietota melnbalta standartdeju kleita - XS/S - Junior II un jauniešu klase
+2026-11-28 05:28:15 Brīdinājums: nav Shopify atslēgu — atlikums pēc publiskās 'available' pazīmes
+2026-11-28 05:28:18 OK: 140 preces, izslēgtas 11, ar bildi 140 -> salidzini-lv.xml
+2026-11-28 05:28:18   jauna prece bez curated nosaukuma: Diamond Fashion Lietota balta standartdeju kleita ar spalvām - XS - Junior II
+2026-11-28 05:28:18   jauna prece bez curated nosaukuma: Diamond Fashion Lietota rozā latīņamerikas deju sacensību kleita ar spalvām - Junior II, XS
+2026-11-28 05:28:18   jauna prece bez curated nosaukuma: Diamond Fashion Lietota melna latīņamerikas deju sacensību kleita - Junior II, XS
+2026-11-28 05:28:18   jauna prece bez curated nosaukuma: Diamond Fashion Lietota sarkana standartdeju kleita ar spalvām – XS/S - Junior II un jauniešu klase
+2026-11-28 05:28:18   jauna prece bez curated nosaukuma: Diamond Fashion Lietota melnbalta standartdeju kleita - XS/S - Junior II un jauniešu klase

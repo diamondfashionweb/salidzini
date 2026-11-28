@@ -1,6 +1,6 @@
-2026-11-27 05:34:23 Brīdinājums: nav Shopify atslēgu — pieejamība pēc publiskās 'available', bez <stock>
-2026-11-27 05:34:25 OK: 140 preces, izslēgtas 11 -> hind-ee.xml
-2026-11-27 05:34:25   nosaukums izskatās latvisks (pievieno et_names.json): 16839809106265 Diamond Fashion Lietota balta standarta balles kleita ar spalvām - XS - Junior II
-2026-11-27 05:34:25   nosaukums izskatās latvisks (pievieno et_names.json): 16839633961305 Diamond Fashion Lietota rozā latīņamerikāņu deju sacensību kleita ar spalvām - Junior II, XS
-2026-11-27 05:34:25   nosaukums izskatās latvisks (pievieno et_names.json): 16839470874969 Diamond Fashion Lietota melna latīņamerikāņu deju sacensību kleita - Junior II, XS
-2026-11-27 05:34:25   nosaukums izskatās latvisks (pievieno et_names.json): 16839413891417 Diamond Fashion Lietota sarkana standarta balles kleita ar spalvām – XS/S - Junior II un jaunieši
+2026-11-28 05:28:20 Brīdinājums: nav Shopify atslēgu — pieejamība pēc publiskās 'available', bez <stock>
+2026-11-28 05:28:21 OK: 140 preces, izslēgtas 11 -> hind-ee.xml
+2026-11-28 05:28:21   nosaukums izskatās latvisks (pievieno et_names.json): 16839809106265 Diamond Fashion Lietota balta standarta balles kleita ar spalvām - XS - Junior II
+2026-11-28 05:28:21   nosaukums izskatās latvisks (pievieno et_names.json): 16839633961305 Diamond Fashion Lietota rozā latīņamerikāņu deju sacensību kleita ar spalvām - Junior II, XS
+2026-11-28 05:28:21   nosaukums izskatās latvisks (pievieno et_names.json): 16839470874969 Diamond Fashion Lietota melna latīņamerikāņu deju sacensību kleita - Junior II, XS
+2026-11-28 05:28:21   nosaukums izskatās latvisks (pievieno et_names.json): 16839413891417 Diamond Fashion Lietota sarkana standarta balles kleita ar spalvām – XS/S - Junior II un jaunieši
